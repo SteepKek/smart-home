@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Plan from './components/Plan/Plan';
+import config from './config';
 
 function App() {
   // Your ESP8266 sensor ID
@@ -11,7 +12,7 @@ function App() {
   // Fetch sensor data
   const fetchSensorData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/sensors');
+      const response = await fetch(`${config.API_URL}/api/sensors`);
       const data = await response.json();
       console.log('All sensors data:', data);
 
@@ -45,7 +46,7 @@ function App() {
       
       console.log('Sending request with body:', body);
 
-      const response = await fetch(`http://localhost:5000/api/sensors/${SENSOR_ID}/data`, {
+      const response = await fetch(`${config.API_URL}/api/sensors/${SENSOR_ID}/data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

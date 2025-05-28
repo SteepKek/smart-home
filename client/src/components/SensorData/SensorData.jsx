@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SensorData.css';
+import config from '../../config';
 
 const ZONES = [
   {
@@ -51,7 +52,7 @@ const SensorData = () => {
   // Функція для оновлення даних з сервера
   const fetchSensorData = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/sensor-data');
+      const response = await fetch(`${config.API_URL}/api/sensor-data`);
       const data = await response.json();
       
       // Оновлюємо тільки активну зону
@@ -68,7 +69,7 @@ const SensorData = () => {
   // Функція для керування пристроями
   const handleDeviceControl = async (deviceId, type, newState) => {
     try {
-      const response = await fetch('http://localhost:3001/api/control', {
+      const response = await fetch(`${config.API_URL}/api/control`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Circle, Text, Image } from 'react-konva';
 import axios from 'axios';
 import useImage from 'use-image';
+import config from '../../config';
 
 const BackgroundImage = ({ width, height }) => {
   const [image] = useImage('/plan.PNG');
@@ -61,7 +62,7 @@ const FloorPlan = () => {
   useEffect(() => {
     const fetchSensors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/sensors');
+        const response = await axios.get(`${config.API_URL}/api/sensors`);
         setSensors(response.data);
       } catch (error) {
         console.error('Error fetching sensors:', error);
@@ -77,7 +78,7 @@ const FloorPlan = () => {
     if (sensor.type === 'RELAY') {
       try {
         const newState = !sensor.data.state;
-        await axios.post(`http://localhost:5000/api/sensors/${sensor._id}/toggle`, {
+        await axios.post(`${config.API_URL}/api/sensors/${sensor._id}/toggle`, {
           state: newState,
         });
         setSensors(sensors.map(s => 
