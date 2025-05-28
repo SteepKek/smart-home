@@ -37,30 +37,27 @@ function App() {
       setLoading(true);
       console.log(`Setting LED color to: ${color}`);
       
-      // Preserve existing data while updating color
-      const currentData = sensorData?.data || {};
-      const body = { 
-        data: {
-          ...currentData,
-          state: true,
-          ledColor: color
-        }
-      };
-      
-      console.log('Sending request with body:', body);
-
-      const response = await fetch(`${baseUrl}/api/sensors/${SENSOR_ID}/data`, {
+      const response = await fetch(`${baseUrl}/api/esp8266/led`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ color }),
       });
 
       const data = await response.json();
       console.log('Response from LED update:', data);
       
-      setSensorData(data);
+      if (data.success) {
+        // Update local state with new color
+        setSensorData(prev => ({
+          ...prev,
+          data: {
+            ...prev.data,
+            ledColor: color
+          }
+        }));
+      }
     } catch (error) {
       console.error('Error setting LED color:', error);
     } finally {
