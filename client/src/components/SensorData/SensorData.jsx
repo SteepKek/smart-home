@@ -48,11 +48,18 @@ const ZONES = [
 
 const SensorData = () => {
   const [zones, setZones] = useState(ZONES);
+  const [error, setError] = useState(null);
+
+  // Видаляємо слеш з кінця базового URL якщо він є
+  const baseUrl = config.API_URL.endsWith('/') ? config.API_URL.slice(0, -1) : config.API_URL;
 
   // Функція для оновлення даних з сервера
   const fetchSensorData = async () => {
     try {
-      const response = await fetch(`${config.API_URL}/api/sensor-data`);
+      const response = await fetch(`${baseUrl}/api/sensor-data`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       
       // Оновлюємо тільки активну зону
@@ -61,15 +68,17 @@ const SensorData = () => {
           zone.isActive ? { ...zone, ...data } : zone
         )
       );
+      setError(null);
     } catch (error) {
       console.error('Помилка отримання даних:', error);
+      setError(error.message);
     }
   };
 
   // Функція для керування пристроями
   const handleDeviceControl = async (deviceId, type, newState) => {
     try {
-      const response = await fetch(`${config.API_URL}/api/control`, {
+      const response = await fetch(`${baseUrl}/api/control`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,8 +90,13 @@ const SensorData = () => {
         }),
       });
 
-      if (response.ok) {
-        // Оновлюємо стан в інтерфейсі після успішного запиту
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
         setZones(prevZones =>
           prevZones.map(zone => {
             if (!zone.isActive) return zone;
@@ -100,9 +114,11 @@ const SensorData = () => {
             };
           })
         );
+        setError(null);
       }
     } catch (error) {
       console.error('Помилка керування пристроєм:', error);
+      setError(error.message);
     }
   };
 

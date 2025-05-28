@@ -69,6 +69,20 @@ app.get('/', (req, res) => {
 });
 
 // API endpoint для отримання даних з датчиків
+app.get('/api/sensors', (req, res) => {
+  res.json([{
+    _id: '683220f3f7d3fe003c76184e',
+    data: {
+      temperature: sensorData.temperature,
+      humidity: sensorData.humidity,
+      motion: sensorData.motion,
+      state: true,
+      lightLevel: 500 // Тестове значення
+    }
+  }]);
+});
+
+// API endpoint для отримання даних з датчиків (альтернативний формат)
 app.get('/api/sensor-data', (req, res) => {
   res.json(sensorData);
 });
