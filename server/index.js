@@ -13,13 +13,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Налаштування CORS для доступу з фронтенду
+// Налаштування CORS для доступу з фронтенду та ESP8266
 app.use(cors({
-  origin: 'https://smart-home-client.onrender.com',
+  origin: ['https://smart-home-client.onrender.com', 'null'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 
 // Конфігурація ESP8266
@@ -32,6 +33,8 @@ let sensorData = {
   temperature: 0,
   humidity: 0,
   motion: false,
+  lightLevel: 0,
+  ledColor: 'none',
   devices: {
     lights: [
       { id: 'garage-light', state: false }
@@ -63,9 +66,35 @@ async function updateSensorData() {
 // Періодичне оновлення даних
 setInterval(updateSensorData, 2000);
 
-// Базовий роут для перевірки роботи сервера
-app.get('/', (req, res) => {
-  res.json({ status: 'Server is running' });
+// API endpoint для ESP8266
+app.post('/api/esp8266/data', (req, res) => {
+  console.log('Received data from ESP8266:', req.body);
+  
+  if (req.body && req.body.data) {
+    // Оновлюємо дані з датчиків
+    sensorData.lightLevel = req.body.data.lightLevel || sensorData.lightLevel;
+    
+    // Відправляємо поточний колір LED
+    res.json({
+      success: true,
+      data: {
+        ledColor: sensorData.ledColor
+      }
+    });
+  } else {
+    res.status(400).json({ error: 'Invalid data format' });
+  }
+});
+
+// API endpoint для керування LED
+app.post('/api/esp8266/led', (req, res) => {
+  const { color } = req.body;
+  if (color && ['red', 'green', 'blue', 'none'].includes(color)) {
+    sensorData.ledColor = color;
+    res.json({ success: true, data: { ledColor: color } });
+  } else {
+    res.status(400).json({ error: 'Invalid color' });
+  }
 });
 
 // API endpoint для отримання даних з датчиків
@@ -76,8 +105,9 @@ app.get('/api/sensors', (req, res) => {
       temperature: sensorData.temperature,
       humidity: sensorData.humidity,
       motion: sensorData.motion,
-      state: true,
-      lightLevel: 500 // Тестове значення
+      lightLevel: sensorData.lightLevel,
+      ledColor: sensorData.ledColor,
+      state: true
     }
   }]);
 });
@@ -92,14 +122,6 @@ app.post('/api/control', async (req, res) => {
   const { deviceId, type, state } = req.body;
 
   try {
-    // Відправка команди на ESP8266
-    await axios.post(`${ESP_URL}/control`, {
-      deviceId,
-      type,
-      state
-    });
-
-    // Оновлення стану в локальному об'єкті після успішної відправки
     if (type === 'light') {
       sensorData.devices.lights = sensorData.devices.lights.map(light =>
         light.id === deviceId ? { ...light, state } : light
@@ -112,9 +134,9 @@ app.post('/api/control', async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Помилка відправки команди на ESP8266:', error.message);
+    console.error('Помилка керування пристроєм:', error.message);
     res.status(500).json({ 
-      error: 'Помилка відправки команди',
+      error: 'Помилка керування пристроєм',
       details: error.message 
     });
   }
