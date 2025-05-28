@@ -8,7 +8,11 @@ const port = process.env.PORT || 3001;
 
 // Налаштування CORS для доступу з фронтенду
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'https://smart-home-client.onrender.com',
+    'https://smart-home-client.onrender.com/'
+  ],
   credentials: true
 }));
 app.use(express.json());
