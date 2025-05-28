@@ -6,14 +6,19 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Логуємо всі запити для налагодження
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Origin:', req.headers.origin);
+  next();
+});
+
 // Налаштування CORS для доступу з фронтенду
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    'https://smart-home-client.onrender.com',
-    'https://smart-home-client.onrender.com/'
-  ],
-  credentials: true
+  origin: 'https://smart-home-client.onrender.com',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 

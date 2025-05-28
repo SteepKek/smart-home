@@ -9,10 +9,13 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
+  // Видаляємо слеш з кінця базового URL якщо він є
+  const baseUrl = config.API_URL.endsWith('/') ? config.API_URL.slice(0, -1) : config.API_URL;
+
   // Fetch sensor data
   const fetchSensorData = async () => {
     try {
-      const response = await fetch(`${config.API_URL}/api/sensors`);
+      const response = await fetch(`${baseUrl}/api/sensors`);
       const data = await response.json();
       console.log('All sensors data:', data);
 
@@ -46,7 +49,7 @@ function App() {
       
       console.log('Sending request with body:', body);
 
-      const response = await fetch(`${config.API_URL}/api/sensors/${SENSOR_ID}/data`, {
+      const response = await fetch(`${baseUrl}/api/sensors/${SENSOR_ID}/data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
