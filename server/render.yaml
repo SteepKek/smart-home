@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: smart-home-server
+    env: node
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        sync: false
+      - key: ESP_IP
+        sync: false
+      - key: ESP_PORT
+        value: 80 

@@ -1,0 +1,117 @@
+.plan-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.plan-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.plan-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 133.33%;
+  height: 0;
+  background-color: #fff;
+}
+
+.plan-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.buttons-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.device-button {
+  position: absolute;
+  width: clamp(20px, 4vw, 35px);
+  height: clamp(20px, 4vw, 35px);
+  font-size: clamp(12px, 2vw, 16px);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  background-color: white;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.device-button:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.device-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Стилі для активних станів */
+.device-button[data-state="on"] {
+  box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+}
+
+.device-button[data-type="window"][data-state="open"] {
+  box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .plan-page {
+    padding: 10px;
+  }
+
+  .plan-container {
+    width: calc(100% - 20px);
+    margin: 10px auto;
+  }
+
+  .device-button {
+    width: clamp(30px, 8vw, 45px);
+    height: clamp(30px, 8vw, 45px);
+    font-size: clamp(14px, 4vw, 20px);
+  }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+  .plan-page {
+    padding: 5px;
+  }
+
+  .plan-container {
+    width: calc(100% - 10px);
+  }
+
+  .device-button {
+    width: clamp(25px, 7vw, 40px);
+    height: clamp(25px, 7vw, 40px);
+    font-size: clamp(12px, 3.5vw, 18px);
+  }
+}

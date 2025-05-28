@@ -1,0 +1,159 @@
+.sensor-data {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding: 20px;
+}
+
+.zones-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.zone-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.zone-card.active {
+  border: 2px solid #4CAF50;
+}
+
+.zone-card.inactive {
+  opacity: 0.7;
+  background: #f5f5f5;
+}
+
+.zone-title {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.sensor-values {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sensor-value {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.sensor-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.sensor-reading {
+  font-weight: 600;
+  color: #2196F3;
+}
+
+.zone-card.active .sensor-reading {
+  color: #4CAF50;
+}
+
+/* Стилі для секцій пристроїв */
+.devices-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.devices-title {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.device-control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.device-name {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.control-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+/* Стилі для кнопок світла */
+.control-button.off {
+  background-color: #e0e0e0;
+  color: #666;
+}
+
+.control-button.on {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Стилі для кнопок вікон */
+.control-button.closed {
+  background-color: #e0e0e0;
+  color: #666;
+}
+
+.control-button.open {
+  background-color: #2196F3;
+  color: white;
+}
+
+.control-button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .zones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sensor-data {
+    padding: 10px;
+  }
+
+  .zone-card {
+    padding: 12px;
+  }
+
+  .device-control {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .control-button {
+    width: 100%;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .zones-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+} 
