@@ -3,8 +3,7 @@ import Plan from './components/Plan/Plan';
 
 function App() {
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Smart Home Dashboard</h1>
+    <div style={{ padding: 10 }}>
       <Plan />
     </div>
   );

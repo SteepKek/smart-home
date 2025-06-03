@@ -143,6 +143,7 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
 function Plan() {
   return (
     <div className='plan-page'>
+      <h1 className='dashboard-title'>Smart Home Dashboard</h1>
       <SensorData />
       <div className='plan-container'>
         <div className='plan-wrapper'>
