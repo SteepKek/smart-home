@@ -50,7 +50,6 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
   background-color: white;
   pointer-events: auto;
@@ -63,22 +62,77 @@
   line-height: 1;
 }
 
-.device-button:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+/* Стилі для кнопок світла */
+.device-button[data-type="light"] {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-.device-button:disabled {
-  cursor: not-allowed;
+.device-button[data-type="light"][data-state="on"] {
+  background-color: #ffeb3b !important;
+  box-shadow: 0 0 15px rgba(255, 235, 59, 0.7);
 }
 
-/* Стилі для активних станів */
-.device-button[data-state="on"] {
-  box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+.device-button[data-type="light"][data-state="off"] {
+  background-color: #e0e0e0;
+  opacity: 0.8;
+}
+
+/* Стилі для кнопок вікон */
+.device-button[data-type="window"] {
+  background-color: #e3f2fd;
+  border: 2px solid #64b5f6;
 }
 
 .device-button[data-type="window"][data-state="open"] {
+  background-color: #90caf9;
   box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+  border-color: #1976d2;
+}
+
+.device-button[data-type="window"][data-state="closed"] {
+  background-color: #e3f2fd;
+  opacity: 0.8;
+}
+
+/* Ховер ефекти */
+.device-button:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.device-button[data-type="light"]:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.device-button[data-type="window"]:hover {
+  box-shadow: 0 4px 12px rgba(100, 181, 246, 0.3);
+}
+
+/* Неактивні зони */
+.device-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(0.5);
+}
+
+/* Підказка стану */
+.device-button::after {
+  content: attr(data-status);
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  white-space: nowrap;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.device-button:hover::after {
+  opacity: 1;
 }
 
 /* Mobile styles */
