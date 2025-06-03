@@ -27,6 +27,8 @@ const DEVICE_POSITIONS = [
 
 const DeviceButton = ({ type, x, y, title, isActive, id }) => {
   const [state, setState] = useState('off');
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [lastServerState, setLastServerState] = useState(null);
   
   const getIcon = (type) => {
     switch (type) {
@@ -49,21 +51,24 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
   };
 
   const handleClick = async (e) => {
-    if (!isActive) {
+    if (!isActive || isUpdating) {
       e.preventDefault();
       return;
     }
 
     if (id === 'garage-light') {
       try {
+        setIsUpdating(true);
+        const newState = state === 'on' ? 'off' : 'on';
         const baseUrl = config.API_URL.endsWith('/') ? config.API_URL.slice(0, -1) : config.API_URL;
+        
         const response = await fetch(`${baseUrl}/api/esp8266/led`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ 
-            color: state === 'on' ? 'none' : 'red' // Вимикаємо якщо увімкнено, вмикаємо якщо вимкнено
+            color: newState === 'on' ? 'red' : 'none'
           }),
         });
 
@@ -71,13 +76,16 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
           throw new Error('Failed to toggle light');
         }
 
-        // Оновлюємо стан після успішного запиту
-        setState(state === 'on' ? 'off' : 'on');
+        setState(newState);
+        setLastServerState(newState);
       } catch (error) {
         console.error('Error toggling light:', error);
+        // Повертаємо попередній стан у разі помилки
+        setState(state);
+      } finally {
+        setIsUpdating(false);
       }
     } else if (type === 'window' && isActive) {
-      // Для вікон просто перемикаємо стан
       setState(state === 'open' ? 'closed' : 'open');
     }
   };
@@ -91,8 +99,14 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
           const response = await fetch(`${baseUrl}/api/sensors`);
           const data = await response.json();
           const sensor = data.find(s => s._id === '683220f3f7d3fe003c76184e');
-          if (sensor) {
-            setState(sensor.data.state ? 'on' : 'off');
+          
+          if (sensor && !isUpdating) {
+            const newState = sensor.data.state ? 'on' : 'off';
+            // Оновлюємо стан тільки якщо він відрізняється від останнього відомого стану сервера
+            if (newState !== lastServerState) {
+              setState(newState);
+              setLastServerState(newState);
+            }
           }
         } catch (error) {
           console.error('Error fetching light state:', error);
@@ -103,7 +117,7 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
       const interval = setInterval(fetchState, 2000);
       return () => clearInterval(interval);
     }
-  }, [id, isActive]);
+  }, [id, isActive, isUpdating, lastServerState]);
 
   return (
     <button 
@@ -119,7 +133,7 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
       data-type={type}
       data-state={state}
       data-status={getStatus()}
-      disabled={!isActive}
+      disabled={!isActive || isUpdating}
     >
       {getIcon(type)}
     </button>
