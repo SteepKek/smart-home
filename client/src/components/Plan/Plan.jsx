@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './Plan.css';
 import SensorData from '../SensorData/SensorData';
 import config from '../../config';
@@ -62,26 +65,33 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
         const newState = state === 'on' ? 'off' : 'on';
         const baseUrl = config.API_URL.endsWith('/') ? config.API_URL.slice(0, -1) : config.API_URL;
         
-        const response = await fetch(`${baseUrl}/api/esp8266/led`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            color: newState === 'on' ? 'red' : 'none'
-          }),
+        const toastId = toast.loading('Оновлення стану...', {
+          position: "top-right",
+          autoClose: false
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to toggle light');
-        }
+        await axios.post(`${baseUrl}/api/esp8266/led`, {
+          color: newState === 'on' ? 'red' : 'none'
+        });
 
         setState(newState);
         setLastServerState(newState);
+        
+        toast.update(toastId, {
+          render: `Світло успішно ${newState === 'on' ? 'увімкнено' : 'вимкнено'}`,
+          type: "success",
+          isLoading: false,
+          autoClose: 3000
+        });
       } catch (error) {
         console.error('Error toggling light:', error);
         // Повертаємо попередній стан у разі помилки
         setState(state);
+        
+        toast.error(`Помилка: ${error.response?.data?.message || 'Не вдалося змінити стан світла'}`, {
+          position: "top-right",
+          autoClose: 5000
+        });
       } finally {
         setIsUpdating(false);
       }
@@ -96,8 +106,7 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
       const fetchState = async () => {
         try {
           const baseUrl = config.API_URL.endsWith('/') ? config.API_URL.slice(0, -1) : config.API_URL;
-          const response = await fetch(`${baseUrl}/api/sensors`);
-          const data = await response.json();
+          const { data } = await axios.get(`${baseUrl}/api/sensors`);
           const sensor = data.find(s => s._id === '683220f3f7d3fe003c76184e');
           
           if (sensor && !isUpdating) {
@@ -110,6 +119,13 @@ const DeviceButton = ({ type, x, y, title, isActive, id }) => {
           }
         } catch (error) {
           console.error('Error fetching light state:', error);
+          // Показуємо помилку тільки якщо це не помилка скасування запиту
+          if (!axios.isCancel(error)) {
+            toast.error('Помилка отримання стану світла', {
+              position: "top-right",
+              autoClose: 3000
+            });
+          }
         }
       };
 
@@ -163,6 +179,7 @@ function Plan() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
