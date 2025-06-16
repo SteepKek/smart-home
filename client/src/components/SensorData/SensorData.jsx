@@ -5,7 +5,7 @@ import config from '../../config';
 const ZONES = [
   {
     id: 1,
-    name: 'Гараж та прилеглі кімнати',
+    name: 'Гараж та прилеглі приміщення',
     isActive: true,
     temperature: 22,
     humidity: 45,
